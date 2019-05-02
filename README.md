@@ -11,15 +11,15 @@ The gcc will be avaliale in
 
 To make the image:
 ```
-docker build --tag=fedora-gcc4.8.5 .
+docker build --tag=fedora-gcc485 .
 ```
 
 After build, to run:
 ```
-docker run -it fedora-gcc4.8.5 bash
+docker run -it fedora-gcc485 bash
 ```
 
 To map a host directory in the container
 ```
-docker run -it --mount type=bind,source="C:\path\to\my\src",target="/tmp/source" fedora-gcc4.8.5 bash
+docker run -it --mount type=bind,source="C:\path\to\my\src",target="/tmp/source" fedora-gcc485 bash
 ```
