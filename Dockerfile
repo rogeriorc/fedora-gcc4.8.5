@@ -2,31 +2,31 @@
 FROM fedora:23
 
 #Before installing gcc 4.8.5, install the build pre-requisites
-RUN dnf groupinstall -y "Development tools"
-RUN dnf install -y          \ 
-    tar                     \
-    bzip2                   \
-    glibc-devel             \
-    glibc                   \
-    glibc-devel.i686        \
-    glibc.i686              \
-    gcc-c++                 \
-    m4                      \
-    wget                    \
-    zlib                    \
-    zlib-devel              \
-    libuuid                 \
-    libuuid-devel
+RUN dnf groupinstall -y "Development tools"                                         \
+    && dnf install -y                                                               \ 
+        tar                                                                         \
+        bzip2                                                                       \
+        glibc-devel                                                                 \
+        glibc                                                                       \
+        glibc-devel.i686                                                            \
+        glibc.i686                                                                  \
+        gcc-c++                                                                     \
+        m4                                                                          \
+        zlib                                                                        \
+        zlib-devel                                                                  \
+        libuuid                                                                     \
+        libuuid-devel                                                               \
+    && dnf clean all
 
 #Download, build and install gcc pre-requisites
-RUN wget -O- https://gmplib.org/download/gmp/gmp-5.1.3.tar.bz2 -P /tmp              \
+RUN curl -o- https://gmplib.org/download/gmp/gmp-5.1.3.tar.bz2 -P /tmp              \
         | tar -jxf - -C /tmp                                                        \
     && cd /tmp/gmp-5.1.3/                                                           \
     && ./configure                                                                  \
     && make                                                                         \
     && make install
 
-RUN wget -O- https://www.mpfr.org/mpfr-3.1.2/mpfr-3.1.2.tar.bz2                     \
+RUN curl -o- https://www.mpfr.org/mpfr-3.1.2/mpfr-3.1.2.tar.bz2                     \
         | tar -jxf - -C /tmp                                                        \
     && cd /tmp/mpfr-3.1.2                                                           \
     && ./configure                                                                  \ 
@@ -34,7 +34,7 @@ RUN wget -O- https://www.mpfr.org/mpfr-3.1.2/mpfr-3.1.2.tar.bz2                 
     && make                                                                         \
     && make install                                    
 
-RUN wget -O- https://ftp.gnu.org/gnu/mpc/mpc-1.0.1.tar.gz                           \
+RUN curl -o- https://ftp.gnu.org/gnu/mpc/mpc-1.0.1.tar.gz                           \
         | tar -zxf - -C /tmp                                                        \
     && cd /tmp/mpc-1.0.1/                                                           \
     && ./configure                                                                  \
@@ -44,7 +44,7 @@ RUN wget -O- https://ftp.gnu.org/gnu/mpc/mpc-1.0.1.tar.gz                       
     && make install
 
 #Build gcc 4.8.5
-RUN wget -O- https://ftp.gnu.org/gnu/gcc/gcc-4.8.5/gcc-4.8.5.tar.bz2                \
+RUN curl -o- https://ftp.gnu.org/gnu/gcc/gcc-4.8.5/gcc-4.8.5.tar.bz2                \
         | tar -jxf - -C /tmp                                                        \
     && cd /tmp/gcc-4.8.5                                                            \
     && ./configure                                                                  \
@@ -60,6 +60,38 @@ RUN wget -O- https://ftp.gnu.org/gnu/gcc/gcc-4.8.5/gcc-4.8.5.tar.bz2            
 RUN cd /usr/bin                                                                     \
     && ln -s /opt/gcc485/bin/gcc gcc485                                             \
     && ln -s /opt/gcc485/bin/g++ g++485
+
+RUN echo '' >> /root/.bashrc                                                        \
+    && echo '#GCC 4.8.5 para uso do CMAKE' >> /root/.bashrc                         \
+    && echo 'export CC=/opt/gcc485/bin/gcc' >> /root/.bashrc                        \
+    && echo 'export CXX=/opt/gcc485/bin/g++' >> /root/.bashrc                       \
+    && echo '' >> /root/.bashrc 
+
+#Cleanup
+RUN rm -rf /tmp/gcc-4.8.5/                                                          \
+    && rm -rf /tmp/gmp-5.1.3/                                                       \
+    && rm -rf /tmp/mpc-1.0.1/                                                       \
+    && rm -rf /tmp/mpfr-3.1.2/                                                      
+
+# Cleanup de instalacoes
+# RUN dnf groupremove -y "Development tools"                                          \
+#     && dnf remove -y                                                                \
+#         tar                                                                         \
+#         bzip2                                                                       \
+#         glibc-devel                                                                 \
+#         glibc                                                                       \
+#         glibc-devel.i686                                                            \
+#         glibc.i686                                                                  \
+#         gcc-c++                                                                     \
+#         m4                                                                          \
+#         zlib                                                                        \
+#         zlib-devel                                                                  \
+#         libuuid                                                                     \
+#         libuuid-devel                                                               \
+#     && dnf clean all
+
+
+
 
 # Install NVM and NODE v10
 ENV NVM_DIR         /opt/nvm

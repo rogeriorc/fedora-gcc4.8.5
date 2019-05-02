@@ -11,7 +11,7 @@ The gcc will be avaliale in
 
 To make the image:
 ```
-docker build --tag=fedora-gcc485 .
+docker build --force-rm --tag=fedora-gcc485 . 
 ```
 
 After build, to run:
